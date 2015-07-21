@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GcmEx</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="api_key">AIzaSyBJSnRxoEBEHnvg2wkpssOEkepS0Aloz2Y</string>
+    <string name="sender_id">259895302333</string>
+</resources>
