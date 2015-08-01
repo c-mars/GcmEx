@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit.RestAdapter;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import timber.log.Timber;
 
@@ -41,11 +43,9 @@ public class MainActivity extends Activity {
                 .build();
         GcmApiService service= restAdapter.create(GcmApiService.class);
         rx.Observable<GcmApiService.MessageId> observable= service.send(new GcmApiService.Message("/topics/a", message));
-        observable.subscribe(messageId -> adapter.add("sent messageId:"+messageId), throwable -> adapter.add("error:"+throwable.getMessage()));
+        observable.observeOn(AndroidSchedulers.mainThread()).subscribe(messageId -> adapter.add("sent messageId:" + messageId.getMessage_id()), throwable -> adapter.add("error:" + throwable.getMessage()));
     }
 
-    String[] DATA = {"a", "b", "c"};
-    ArrayList<String> data=new ArrayList<>();
     MAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
 
@@ -59,8 +59,8 @@ public class MainActivity extends Activity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        data.addAll(Arrays.asList(DATA));
-        adapter = new MAdapter(data);
+//        data.addAll(Arrays.asList(DATA));
+        adapter = new MAdapter();
         recyclerView.setAdapter(adapter);
 
         boolean sa=checkPlayServices();
@@ -78,10 +78,9 @@ public class MainActivity extends Activity {
     }
 
     class MAdapter extends RecyclerView.Adapter<MAdapter.ViewHolder> {
-        ArrayList<String> data;
+        ArrayList<String> data = new ArrayList<>();
 
-        public MAdapter(ArrayList<String> data) {
-            this.data = data;
+        public MAdapter() {
         }
 
         @Override
@@ -112,19 +111,19 @@ public class MainActivity extends Activity {
 
         public void add(String s){
             data.add(s);
-            adapter.notifyDataSetChanged();
+            adapter.notifyItemInserted(data.size()-1);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(receiver, new IntentFilter(GcmListenerService.ACTION_MSG));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(GcmListenerService.ACTION_MSG));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onPause();
     }
 
