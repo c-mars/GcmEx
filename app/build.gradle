@@ -38,6 +38,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
 
 dependencies {
@@ -48,4 +51,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.infstory:retrofit:2.0.0'
+    compile 'org.projectlombok:lombok:1.16.4'
 }

@@ -18,9 +18,13 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import retrofit.RestAdapter;
+import rx.functions.Action1;
 import timber.log.Timber;
 
 
@@ -30,6 +34,15 @@ public class MainActivity extends Activity {
     RecyclerView recyclerView;
     @Bind(R.id.t)
     TextView t;
+    @OnClick(R.id.b) void b(){
+        String message = String.valueOf(new Random().nextInt(100));
+        RestAdapter restAdapter=new RestAdapter.Builder()
+                .setEndpoint("https://gcm-http.googleapis.com")
+                .build();
+        GcmApiService service= restAdapter.create(GcmApiService.class);
+        rx.Observable<GcmApiService.MessageId> observable= service.send(new GcmApiService.Message("/topics/a", message));
+        observable.subscribe(messageId -> adapter.add("sent messageId:"+messageId), throwable -> adapter.add("error:"+throwable.getMessage()));
+    }
 
     String[] DATA = {"a", "b", "c"};
     ArrayList<String> data=new ArrayList<>();
@@ -99,7 +112,7 @@ public class MainActivity extends Activity {
 
         public void add(String s){
             data.add(s);
-            notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         }
     }
 
