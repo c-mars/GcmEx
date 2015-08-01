@@ -111,7 +111,9 @@ public class MainActivity extends Activity {
 
         public void add(String s){
             data.add(s);
-            adapter.notifyItemInserted(data.size()-1);
+            int p=data.size()-1;
+            adapter.notifyItemInserted(p);
+            recyclerView.scrollToPosition(p);
         }
     }
 
