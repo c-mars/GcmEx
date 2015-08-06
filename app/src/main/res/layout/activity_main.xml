@@ -29,4 +29,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView android:id="@+id/i"
+        android:layout_below="@+id/b"
+        android:text="@string/i"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>
